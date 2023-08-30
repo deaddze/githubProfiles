@@ -1,23 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
-
+import './App.module.sass'
+import HeaderSearch from './components/HeaderSearch'
+import MainCard from './components/MainCard'
+import {useState, useEffect} from 'react'
+import axios from 'axios'
 function App() {
+  const [searchName, setSearchName] = useState(null);
+  const [data, setData] = useState('');
+  function searchFunc(data){
+    setSearchName(data)
+  }
+  useEffect(() => {
+    if(searchName){
+      const users = axios.get(` https://api.github.com/users/${searchName}`)
+      .then(res => setData(res.data))
+      .catch(err => console.log('Не удалось найти пользователя', err))
+    }
+  }, [searchName])
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+      <header>
+        <HeaderSearch searchFunc={searchFunc}/>
       </header>
+      {data && <main>
+        <MainCard data={data}/>
+      </main>}
     </div>
   );
 }
