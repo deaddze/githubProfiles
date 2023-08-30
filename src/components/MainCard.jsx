@@ -3,10 +3,11 @@ import {useState, useEffect, useRef} from 'react'
 import axios from 'axios'
 function MainCard({data}){
     const [repos, setRepos] = useState([])
-    const [reposURL, setReposURL] = useState(null)
-    // function findURL(e){
+    const [reposName, setReposName] = useState('')
+    // const [url, setUrl] = useState('')
+    // function findUrl(e, name){
     //     e.preventDefault();
-    //     setReposURL()
+    //     setReposName(name)
     // }
     useEffect(() => {
         if(data){
@@ -16,21 +17,31 @@ function MainCard({data}){
         }
     }, [data])
     useEffect(() => {
-        if(reposURL){
-            axios.get(`https://api.github.com/repos/${data.login}/${reposURL}/readme`)
-            .then(res => setReposURL(res.data))
+        if(reposName){
+            axios.get(`https://api.github.com/repos/${data.login}/${reposName}/contents/README.md`)
+            .then(res => {
+                const base64Content = res.data.content;
+                const decodedContent = atob(base64Content);
+                // setReadmeContent(decodedContent);
+            })
             .catch(err => console.log('Не удалось прочитать репозиторий', err))
         }
-    })
+    }, [reposName])
     console.log(repos)
     return (
     <div className={styles.card}>
         <img src={data.avatar_url}></img>
         <h2>{data.login}</h2>
-        <h2>Repositories</h2>
-        {repos.map((rep, index)=> {
-            return <p key={index}><a href={reposURL} onClick={(e) =>{e.preventDefault(); setReposURL(rep.name);}}>{index + 1}. {rep.name}</a></p>
-        })}
+        <div>
+            <h3>Репозитории</h3>
+            <ul>
+                {repos.map((rep, i) => {
+                    return <li>
+                        <a href={`https://api.github.com/repos/${data.login}/${rep.name}/readme`} key={i}>{i + 1}. {rep.name}</a>
+                    </li>
+                })}
+            </ul>
+        </div>
     </div>
     )
 }
