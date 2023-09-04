@@ -1,14 +1,8 @@
 import styles from '../styles/MainCard.module.sass'
 import {useState, useEffect, useRef} from 'react'
 import axios from 'axios'
-function MainCard({data}){
+function MainCard({data, getRepos}){
     const [repos, setRepos] = useState([])
-    const [reposName, setReposName] = useState('')
-    // const [url, setUrl] = useState('')
-    // function findUrl(e, name){
-    //     e.preventDefault();
-    //     setReposName(name)
-    // }
     useEffect(() => {
         if(data){
             axios.get(`https://api.github.com/users/${data.login}/repos`)
@@ -16,18 +10,7 @@ function MainCard({data}){
             .catch(err => console.log('Не удалось найти репозитории', err))
         }
     }, [data])
-    useEffect(() => {
-        if(reposName){
-            axios.get(`https://api.github.com/repos/${data.login}/${reposName}/contents/README.md`)
-            .then(res => {
-                const base64Content = res.data.content;
-                const decodedContent = atob(base64Content);
-                // setReadmeContent(decodedContent);
-            })
-            .catch(err => console.log('Не удалось прочитать репозиторий', err))
-        }
-    }, [reposName])
-    console.log(repos)
+    
     return (
     <div className={styles.card}>
         <img src={data.avatar_url}></img>
@@ -37,8 +20,8 @@ function MainCard({data}){
             <ul>
                 {repos.map((rep, i) => {
                     return <li>
-                        <a href={`https://api.github.com/repos/${data.login}/${rep.name}/readme`} key={i}>{i + 1}. {rep.name}</a>
-                    </li>
+                        <a href="#" onClick={() => getRepos(rep.name)}>{i + 1}. {rep.name}</a>
+                    </li> 
                 })}
             </ul>
         </div>

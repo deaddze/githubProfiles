@@ -1,10 +1,13 @@
 import styles from '../styles/HeaderSearch.module.sass'
-import {useRef} from 'react'
+import {useRef, useEffect, useState} from 'react'
 function HeaderSearch({searchFunc}){
     const inputRef = useRef();
+    const [saveSearch, setSaveSearch] = useState([])
     function searchData(e){
         e.preventDefault()
         searchFunc(inputRef.current.value)
+        setSaveSearch(prevState => [...prevState, inputRef.current.value])
+        inputRef.current.value = '';
     }
     return (
     <>
